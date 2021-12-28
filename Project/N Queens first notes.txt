@@ -1,0 +1,9 @@
+Step by step idea:
+
+1) Generate a square array of arrays occupied with 0s (indicating no queens present) of size n x n
+2) Set the goal number of queens which is equal to n and set the current number of queens placed as 0
+3) Start at the bottom left square (n,0) and check in all directions for a queen
+4) If no queen if found place a queen, then recall that function recursively for the next square across
+5) If the queen can't be placed there backtrack to the previous square and select the next.
+6) If there is no more available spaces for the next queen then backtrack to the previous move and remove the queen
+7) Continue until queen goal has been reached or the end of the board is met
