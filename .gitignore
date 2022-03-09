@@ -37,3 +37,6 @@
 *.app
 
 # End of https://www.toptal.com/developers/gitignore/api/c++
+Serial NQ improved/.vs/testProj/v17/Browse.VC.db
+NQMPI/.vs/NQMPI/v17/Browse.VC.db
+NQMPI/.vs/NQMPI/v17/Browse.VC.opendb
