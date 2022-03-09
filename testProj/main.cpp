@@ -1,8 +1,9 @@
 #include<iostream>
 #include<string.h>
 #include<stdio.h>
+#include<time.h>
 using namespace std;
-constexpr auto N = 14;
+constexpr auto N = 16;
 
 bool checkSquare(int x, int y, bool (*arr)[N]) {
 	int i, j, kx, ky;
@@ -28,7 +29,6 @@ bool checkSquare(int x, int y, bool (*arr)[N]) {
 	}
 
 	return true;
-
 }
 
 void printBoard(bool(*arr)[N]) {
@@ -77,6 +77,7 @@ bool navigateBoardOnce(int y, bool(*arr)[N]) {
 }
 
 bool nq() {
+	clock_t tStart = clock();
 	bool board[N][N];
 
 	memset(board, false, sizeof board);
@@ -85,6 +86,9 @@ bool nq() {
 	cout << N;
 	cout << " is ";
 	cout << navigateBoard(0, board, 0);
+
+
+	printf("\nTime taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
 	//if (navigateBoard(0, board) == false) {
 	//	printf("Solution does not exist");
