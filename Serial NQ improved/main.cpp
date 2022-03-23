@@ -4,7 +4,7 @@
 #include<time.h>
 #include<bitset>
 using namespace std;
-constexpr auto N = 14;
+constexpr auto N = 12;
 
 bool checkSquare(int x, int y, bool (*arr)[N]) {
 	int i, j, kx, ky;
