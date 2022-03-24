@@ -2,12 +2,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-constexpr auto N = 8;
-
-bool checkSquare(int x, int y, int board[N]) {
+bool checkSquare(int N, int x, int y, vector<int> board) {
 
 	//Check X axis
 	if (board[y] < N) return false;
@@ -27,16 +26,16 @@ bool checkSquare(int x, int y, int board[N]) {
 }
 
 //init y = 0
-int nqueens(int y, int board[N]) {
+int nqueens(int N, int y, vector<int> board) {
 	int solutions = 0;
 	if (y == N) solutions++;
 	else {
 		for (int i = 0; i < N; i++) 
 		{	
-			if (checkSquare(i, y, board)) 
+			if (checkSquare(N, i, y, board)) 
 			{
 				board[y] = i;
-				solutions += nqueens(y + 1, board);
+				solutions += nqueens(N, y + 1, board);
 				board[y] = N;
 			}
 		}
@@ -46,7 +45,7 @@ int nqueens(int y, int board[N]) {
 
 }
 
-bool printArr(int board[N]) {
+bool printArr(int N, int board[]) {
 	cout << "[";
 	for (int i = 0; i < N; i++)
 	{
@@ -61,50 +60,20 @@ bool printArr(int board[N]) {
 	return true;
 }
 
-bool runParallel(int world_size, int my_rank) {
+bool runParallel(int N, int world_size, int my_rank, string filename, int depth) {
 	//Calc time to run
 	MPI_Barrier(MPI_COMM_WORLD);
 	double elapsedTime = -MPI_Wtime();
 
-	int board[N];
-	for (int i = 0; i < N; i++) 
-	{
-		board[i] = N;
+	vector<vector<int>> worldSizeBoard;
+	vector<int> oneBoard;
+	for (int i = 0; i < N; i++) {
+		oneBoard.push_back(N);
+	}
+	for (int i = 0; i < world_size; i++) {
+		worldSizeBoard.push_back(oneBoard);
 	}
 
-	int subtotal = 0;
-
-	for (int x = 0; x < N; x += world_size) 
-	{
-		if (x + my_rank < N) 
-		{
-			board[0] = x + my_rank;
-			subtotal += nqueens(1, board);
-		}
-	}
-
-	unsigned long total = 0;
-	MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-
-	MPI_Barrier(MPI_COMM_WORLD);
-	elapsedTime += MPI_Wtime();
-
-
-	if (my_rank == 0) 
-	{
-		cout << "Program executed in " << 1000 * elapsedTime << std::endl;
-		cout << "Total number of solutions found: " << total << std::endl;
-	}
-
-	return true;
-}
-
-bool runParallelNew(int world_size, int my_rank, string filename) {
-	//Calc time to run
-	//MPI_Barrier(MPI_COMM_WORLD);
-	//double elapsedTime = -MPI_Wtime();
-
-	int(*fullArray)[N] = new int[world_size][N];
 	int subtotal = 0;
 	ifstream myfile(filename);
 
@@ -115,14 +84,14 @@ bool runParallelNew(int world_size, int my_rank, string filename) {
 		int i;
 		while (myfile >> i)
 		{
-			fullArray[rankCounter][counter] = i;
+			worldSizeBoard[rankCounter][counter] = i;
 			counter++;
 			if (counter == N) {
 				counter = 0;
 				rankCounter++;
 			}
 			if (rankCounter == world_size) {
-				subtotal += nqueens(3, fullArray[my_rank]);
+				subtotal += nqueens(N, depth, worldSizeBoard[my_rank]);
 				rankCounter = 0;
 			}
 
@@ -134,20 +103,19 @@ bool runParallelNew(int world_size, int my_rank, string filename) {
 	unsigned long total = 0;
 	MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-	//MPI_Barrier(MPI_COMM_WORLD);
-	//elapsedTime += MPI_Wtime();
-
+	MPI_Barrier(MPI_COMM_WORLD);
+	elapsedTime += MPI_Wtime();
 
 	if (my_rank == 0)
 	{
-		//cout << "Program executed in " << 1000 * elapsedTime << std::endl;
+		cout << "Program executed in " << 1000 * elapsedTime << std::endl;
 		cout << "Total number of solutions found: " << total << std::endl;
 	}
 
 	return true;
 }
 
-int nqueensLimitedDepth(int y, int board[N], int depth, ofstream &myfile) {
+int nqueensLimitedDepth(int N, int y, vector<int> board, int depth, ofstream &myfile) {
 	if (y == depth) {
 		for (int i = 0; i < N; i++) 
 		{
@@ -157,10 +125,10 @@ int nqueensLimitedDepth(int y, int board[N], int depth, ofstream &myfile) {
 	}
 	else {
 		for (int i = 0; i < N; i++) {
-			if (checkSquare(i, y, board)) 
+			if (checkSquare(N, i, y, board)) 
 			{
 				board[y] = i;
-				nqueensLimitedDepth(y + 1, board, depth, myfile);
+				nqueensLimitedDepth(N, y + 1, board, depth, myfile);
 				board[y] = N;
 			}
 		}
@@ -168,60 +136,21 @@ int nqueensLimitedDepth(int y, int board[N], int depth, ofstream &myfile) {
 	return 0;
 }
 
-bool generateArrays(string filename) {
-	int board[N];
+bool generateArrays(int N, string filename, int depth) {
+	vector<int> board;
 	for (int i = 0; i < N; i++) 
 	{
-		board[i] = N;
+		board.push_back(N);
 	}
 	ofstream myfile;
 	myfile.open(filename);
-	nqueensLimitedDepth(0, board, 3, myfile);
+	nqueensLimitedDepth(N, 0, board, depth, myfile);
 	myfile.close();
 
 	return true;
 
 }
 
-/*int getFileLineLength(ifstream& myfile) {
-	int count = 0;
-	string line;
-	while (getline(myfile, line)) count++;
-	return count;
-}
-
-bool readFileToArray(string filename) {
-	string line;
-	ifstream myfile(filename);
-
-	int board[N];
-	for (int i = 0; i < N; i++)
-	{
-		board[i] = N;
-	}
-
-	int lengthOfArray = getFileLineLength(myfile);
-	int completeData[lengthOfArray][N];
-
-	if (myfile.is_open())
-	{
-		int counter = 0;
-		int i;
-		while (myfile >> i)
-		{
-			if (counter == N) {
-				printArr(board);
-				counter = 0;
-			}
-			board[counter] = i;
-			counter++;
-
-		}
-		myfile.close();
-		return true;
-	}
-	else return false;
-}*/
 
 int main(int argc, char** argv) {
     int num = 0;
@@ -237,12 +166,13 @@ int main(int argc, char** argv) {
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-	//Run Parallel 
-	//runParallel(world_size, my_rank);
-
+	int N = 10;
+	int depth = 4;
 	//Generate Arrays
-	generateArrays("testValue.txt");
-	runParallelNew(world_size, my_rank, "testValue.txt");
+	if (my_rank == 0) {
+		generateArrays(N, "testValue.txt", depth);
+	}
+	runParallel(N, world_size, my_rank, "testValue.txt", depth);
 
     MPI_Finalize();
 }
