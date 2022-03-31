@@ -18,5 +18,11 @@
     <ClCompile Include="testProg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="autoTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NQueen.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

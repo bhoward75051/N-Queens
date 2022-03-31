@@ -60,10 +60,7 @@ bool printArr(int N, int board[]) {
 	return true;
 }
 
-bool runParallel(int N, int world_size, int my_rank, string filename, int depth) {
-	//Calc time to run
-	MPI_Barrier(MPI_COMM_WORLD);
-	double elapsedTime = -MPI_Wtime();
+int runParallel(int N, int world_size, int my_rank, string filename, int depth) {
 
 	vector<vector<int>> worldSizeBoard;
 	vector<int> oneBoard;
@@ -103,16 +100,7 @@ bool runParallel(int N, int world_size, int my_rank, string filename, int depth)
 	unsigned long total = 0;
 	MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-	MPI_Barrier(MPI_COMM_WORLD);
-	elapsedTime += MPI_Wtime();
-
-	if (my_rank == 0)
-	{
-		cout << "Program executed in " << 1000 * elapsedTime << std::endl;
-		cout << "Total number of solutions found: " << total << std::endl;
-	}
-
-	return true;
+	return subtotal;
 }
 
 int nqueensLimitedDepth(int N, int y, vector<int> board, int depth, ofstream &myfile) {
@@ -150,33 +138,5 @@ bool generateArrays(int N, string filename, int depth) {
 	return true;
 
 }
-
-
-int main(int argc, char** argv) {
-    int num = 0;
-    // Initialize the MPI environment
-    // Must run before all other MPI commands
-    MPI_Init(&argc, &argv);
-
-    // Get the number of processes
-    int world_size;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-
-    //Get rank of the processes
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-
-	int N = 10;
-	int depth = 4;
-	//Generate Arrays
-	if (my_rank == 0) {
-		generateArrays(N, "testValue.txt", depth);
-	}
-	runParallel(N, world_size, my_rank, "testValue.txt", depth);
-
-    MPI_Finalize();
-}
-
-
 
 //mpiexec -n <number of processes> ./NQMPI.exe

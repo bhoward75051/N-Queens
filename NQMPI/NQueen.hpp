@@ -97,10 +97,6 @@ public:
 			}
 			myfile.close();
 		}
-
-		unsigned long total = 0;
-		MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-
 		return subtotal;
 	}
 
@@ -125,7 +121,7 @@ public:
 		return 0;
 	}
 
-	bool generateArrays(int N, string filename, int depth) {
+	bool generateArrays(string filename) {
 		vector<int> board;
 		for (int i = 0; i < N; i++)
 		{
