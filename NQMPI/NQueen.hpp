@@ -25,6 +25,12 @@ public:
 		myRank = myRank_;
 	}
 
+	void setN(us N_) { N = N_; }
+
+	void setDepth(us depth_) { depth = depth_; }
+
+	us getMyRank() { return myRank; }
+
 	bool checkSquare(int x, int y, vector<int> board) {
 
 		//Check X axis
@@ -63,41 +69,41 @@ public:
 
 	}
 
-	int runParallel(string filename) {
+	int runParallel(vector<vector<int>> worldSizeBoard) {
+		int subtotal = 0;
+		for (std::vector<vector<int>>::size_type i = 0; i < worldSizeBoard.size(); i+= worldSize) {
+			if (i + myRank < worldSizeBoard.size()) {
+				subtotal += nqueens(depth, worldSizeBoard[i + myRank]);
+			}
+		}
+		return subtotal;
+	}
+
+	vector<vector<int>> fileToVector(string filename) {
 		vector<vector<int>> worldSizeBoard;
 		vector<int> oneBoard;
+		int counter = 0;
+		int i;
+
 		for (int i = 0; i < N; i++) {
 			oneBoard.push_back(N);
 		}
-		for (int i = 0; i < worldSize; i++) {
-			worldSizeBoard.push_back(oneBoard);
-		}
 
-		int subtotal = 0;
 		ifstream myfile(filename);
-
 		if (myfile.is_open())
 		{
-			int counter = 0;
-			int rankCounter = 0;
-			int i;
 			while (myfile >> i)
 			{
-				worldSizeBoard[rankCounter][counter] = i;
+				oneBoard[counter] = i;
 				counter++;
 				if (counter == N) {
 					counter = 0;
-					rankCounter++;
+					worldSizeBoard.push_back(oneBoard);
 				}
-				if (rankCounter == worldSize) {
-					subtotal += nqueens(depth, worldSizeBoard[myRank]);
-					rankCounter = 0;
-				}
-
 			}
 			myfile.close();
 		}
-		return subtotal;
+		return worldSizeBoard;
 	}
 
 	int nqueensLimitedDepth(int y, vector<int> board, ofstream& myfile) {
