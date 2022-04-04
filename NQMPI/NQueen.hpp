@@ -29,14 +29,24 @@ public:
 
 	void setDepth(us depth_) { depth = depth_; }
 
+	void setWorldSize(us worldSize_) { worldSize = worldSize_; }
+
+	void setMyRank(us myRank_) { myRank = myRank_; }
+
+	us getN() { return N; }
+
+	us getDepth() { return depth; }
+
+	us getWorldSize() { return worldSize; }
+
 	us getMyRank() { return myRank; }
 
-	bool checkSquare(int x, int y, vector<int> board) {
+	bool checkSquare(us x, us y, vector<us> board) {
 
 		//Check X axis
 		if (board[y] < N) return false;
 
-		for (int i = 0; i < N; i++)
+		for (us i = 0; i < N; i++)
 		{
 			//Check Y axis
 			if (board[i] == x) return false;
@@ -50,11 +60,11 @@ public:
 		return true;
 	}
 
-	int nqueens(int y, vector<int> board) {
-		int solutions = 0;
+	ull nqueens(us y, vector<us> board) {
+		ull solutions = 0;
 		if (y == N) solutions++;
 		else {
-			for (int i = 0; i < N; i++)
+			for (us i = 0; i < N; i++)
 			{
 				if (checkSquare(i, y, board))
 				{
@@ -64,14 +74,12 @@ public:
 				}
 			}
 		}
-
 		return solutions;
-
 	}
 
-	int runParallel(vector<vector<int>> worldSizeBoard) {
-		int subtotal = 0;
-		for (std::vector<vector<int>>::size_type i = 0; i < worldSizeBoard.size(); i+= worldSize) {
+	ull runParallel(vector<vector<us>> worldSizeBoard) {
+		ull subtotal = 0;
+		for (std::vector<vector<us>>::size_type i = 0; i < worldSizeBoard.size(); i+= worldSize) {
 			if (i + myRank < worldSizeBoard.size()) {
 				subtotal += nqueens(depth, worldSizeBoard[i + myRank]);
 			}
@@ -79,13 +87,21 @@ public:
 		return subtotal;
 	}
 
-	vector<vector<int>> fileToVector(string filename) {
-		vector<vector<int>> worldSizeBoard;
-		vector<int> oneBoard;
-		int counter = 0;
-		int i;
+	vector<us> createBoard(us N) {
+		vector<us> board;
+		for (us i = 0; i < N; i++) {
+			board.push_back(N);
+		}
+		return board;
+	}
 
-		for (int i = 0; i < N; i++) {
+	vector<vector<us>> fileToVector(string filename) {
+		vector<vector<us>> worldSizeBoard;
+		vector<us> oneBoard;
+		us counter = 0;
+		us i;
+
+		for (us i = 0; i < N; i++) {
 			oneBoard.push_back(N);
 		}
 
@@ -106,16 +122,56 @@ public:
 		return worldSizeBoard;
 	}
 
-	int nqueensLimitedDepth(int y, vector<int> board, ofstream& myfile) {
+	ull runParallelNew(string filename) {
+		vector<vector<us>> worldSizeBoard;
+		vector<us> oneBoard;
+		us counter = 0;
+
+		for (us i = 0; i < N; i++) {
+			oneBoard.push_back(N);
+		}
+		for (us i = 0; i < worldSize; i++) {
+			worldSizeBoard.push_back(oneBoard);
+		}
+
+		ull subtotal = 0;
+		ifstream myfile(filename);
+
+		if (myfile.is_open())
+		{
+			us counter = 0;
+			ull rankCounter = 0;
+			us i;
+			while (myfile >> i)
+			{
+				worldSizeBoard[rankCounter][counter] = i;
+				oneBoard[counter] = i;
+				counter++;
+				if (counter == N) {
+					counter = 0;
+					rankCounter++;
+				}
+				if (rankCounter == worldSize) {
+					subtotal += nqueens(depth, worldSizeBoard[myRank]);
+					rankCounter = 0;
+					worldSizeBoard.push_back(oneBoard);
+				}
+			}
+			myfile.close();
+			return subtotal;
+		}
+	}
+
+	int nqueensLimitedDepth(us y, vector<us> board, ofstream& myfile) {
 		if (y == depth) {
-			for (int i = 0; i < N; i++)
+			for (us i = 0; i < N; i++)
 			{
 				myfile << board[i] << " ";
 			}
 			myfile << "\n";
 		}
 		else {
-			for (int i = 0; i < N; i++) {
+			for (us i = 0; i < N; i++) {
 				if (checkSquare(i, y, board))
 				{
 					board[y] = i;
@@ -128,8 +184,8 @@ public:
 	}
 
 	bool generateArrays(string filename) {
-		vector<int> board;
-		for (int i = 0; i < N; i++)
+		vector<us> board;
+		for (us i = 0; i < N; i++)
 		{
 			board.push_back(N);
 		}

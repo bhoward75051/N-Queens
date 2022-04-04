@@ -1,0 +1,14 @@
+Number of parallel processes: 8
+Depth of initial divide: 6
+Description of test: testing new var types
+N = 13
+Time to execute (sec) = 20.143
+Time to execute (sec) = 20.1234
+Time to execute (sec) = 21.4957
+Time to execute (sec) = 20.2886
+Time to execute (sec) = 20.1455
+Time to execute (sec) = 20.1238
+Time to execute (sec) = 20.0974
+Time to execute (sec) = 20.1268
+Time to execute (sec) = 20.1796
+Time to execute (sec) = 20.2055
