@@ -4,6 +4,8 @@
 #include <chrono>
 #include <vector>
 #include <map>
+#include <sstream>
+#include <string>
 
 #include "NQueen.hpp"
 
@@ -57,6 +59,48 @@ int parallelTest(NQueen nqueen, map<us, ull> solutionMap) {
     return 1;
 }
 
+int individualParallelTest(NQueen nqueen, map<us, ull> solutionMap) {
+    ull subtotal;
+    ull total = 0;
+    ofstream myfile;
+    double genTime, nqueenTime, totalnqueenTime;
+
+    string filename;
+    filename = "N" + std::to_string(nqueen.getN()) + "depth" + std::to_string(nqueen.getDepth()) + ".txt";
+    myfile.open(filename);
+    if (nqueen.getMyRank() == 0) {
+        myfile << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+        myfile << "Number of parallel processes: " << nqueen.getWorldSize() << "\n";
+        myfile << "Depth of initial divide: " << nqueen.getDepth() << "\n";
+        myfile << "Value of N: " << nqueen.getN() << "\n";
+    }
+
+    genTime = MPI_Wtime();
+    nqueen.generateArrays("calculatedValues.txt");
+    genTime = MPI_Wtime() - genTime;
+
+    vector<vector<us>> worldSizeBoard = nqueen.fileToVector("calculatedValues.txt");
+
+    nqueenTime = MPI_Wtime();
+    subtotal = nqueen.runParallel(worldSizeBoard);
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    nqueenTime = MPI_Wtime() - nqueenTime;
+    MPI_Reduce(&nqueenTime, &totalnqueenTime, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (nqueen.getMyRank() == 0) {
+        myfile << "Time to generate inital configuration (sec) = " << genTime << "\n";
+        myfile << "Total time from all ranks (sec) = " << totalnqueenTime << "\n";
+    }
+    if (total == solutionMap[nqueen.getN()]) {
+        myfile << "Time to execute on rank " << nqueen.getMyRank() << " (sec) = " << nqueenTime << "\n";
+    } 
+    else {
+        myfile << "Wrong solution calculated" << "\n";
+    }
+    return total;
+}
+
 int serialTest(NQueen nqueen, map<us, ull> solutionMap) {
 
     if (nqueen.getMyRank() == 0) {
@@ -104,8 +148,11 @@ int main(int argc, char** argv) {
     int myRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
-    us depth = 6;
-    NQueen nqueen(8, depth, worldSize, myRank);
+    int depth, N;
+    N = stoi(argv[1]);
+    depth = stoi(argv[2]);
+
+    NQueen nqueen(N, depth, worldSize, myRank);
 
     std::map<us, ull> solutionMap = {
         {1, 1},
@@ -128,7 +175,9 @@ int main(int argc, char** argv) {
 
     //serialTest(nqueen, solutionMap);
 
-    parallelTest(nqueen, solutionMap);
+    //parallelTest(nqueen, solutionMap);
+
+    individualParallelTest(nqueen, solutionMap);
 
 
     MPI_Finalize();
