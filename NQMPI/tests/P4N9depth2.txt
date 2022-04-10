@@ -1,0 +1,10 @@
+
+real	0m0.043s
+user	0m0.098s
+sys	0m0.030s
+Number of parallel processes: 4
+Depth of initial divide: 2
+Value of N: 9
+Time to generate inital configuration (sec) = 0.000349758
+Total time from all ranks (sec) = 0.0727084
+Wrong solution calculated

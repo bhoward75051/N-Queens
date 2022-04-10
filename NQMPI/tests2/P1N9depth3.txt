@@ -1,0 +1,10 @@
+
+real	0m0.034s
+user	0m0.031s
+sys	0m0.004s
+Number of parallel processes: 1
+Depth of initial divide: 3
+Value of N: 9
+Time to generate inital configuration (sec) = 0.000571496
+Total time from all ranks (sec) = 0.0188432
+Time to execute on rank 0 (sec) = 0.0188432

@@ -1,6 +1,0 @@
-Number of parallel processes: 2
-Depth of initial divide: 8
-Value of N: 8
-Time to generate inital configuration: 0.0120097
-Time to execute on rank 0 (sec) = 0.0120097
-Total time from all ranks: 4.64642e-310

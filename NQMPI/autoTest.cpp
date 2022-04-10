@@ -66,7 +66,7 @@ int individualParallelTest(NQueen nqueen, map<us, ull> solutionMap) {
     double genTime, nqueenTime, totalnqueenTime;
 
     string filename;
-    filename = "N" + std::to_string(nqueen.getN()) + "depth" + std::to_string(nqueen.getDepth()) + ".txt";
+    filename = "tests2/P" + std::to_string(nqueen.getWorldSize()) + "N" + std::to_string(nqueen.getN()) + "depth" + std::to_string(nqueen.getDepth()) + ".txt";
     myfile.open(filename);
     if (nqueen.getMyRank() == 0) {
         myfile << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
