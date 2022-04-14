@@ -1,10 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <mpi.h>
-#include <chrono>
 #include <vector>
 #include <map>
-#include <sstream>
 #include <string>
 
 #include "NQueen.hpp"
@@ -14,50 +12,6 @@ using namespace std;
 typedef unsigned short us;
 typedef unsigned long long ull;
 
-int parallelTest(NQueen nqueen, map<us, ull> solutionMap) {
-    ull subtotal;
-    ull total = 0;
-    ofstream myfile;
-
-    if (nqueen.getMyRank() == 0) {
-        myfile.open("testF.txt");
-        myfile << "Number of parallel processes: " << nqueen.getWorldSize() << "\n";
-        myfile << "Depth of initial divide: " << nqueen.getDepth() << "\n";
-        myfile << "Description of test: testing new var types" << "\n";
-    }
-
-    for (us N = 13; N < 14; N++) {
-        nqueen.setN(N);
-        nqueen.generateArrays("calculatedValues.txt");
-        MPI_Barrier(MPI_COMM_WORLD);
-        vector<vector<us>> worldSizeBoard = nqueen.fileToVector("calculatedValues.txt");
-        if (nqueen.getMyRank() == 0) {
-            myfile << "N = " << N << "\n";
-            cout << "Value: " << N << std::endl;
-        }
-        for (us i = 0; i < 10; i++) {
-            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-            subtotal = nqueen.runParallel(worldSizeBoard);
-            MPI_Barrier(MPI_COMM_WORLD);
-            MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            if (nqueen.getMyRank() == 0) {
-                if (total == solutionMap[N]) {
-                    myfile << "Time to execute (sec) = " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.0 << "\n";
-                    std::cout << "Time to execute (sec) = " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.0 << std::endl;
-                }
-                else {
-                    myfile << "Wrong solution calculated" << "\n";
-                    cout << "Wrong solution calculated. Intended value: " << solutionMap[N] << ". Actual: " << total << std::endl;
-
-                }
-            }
-        }
-    }
-    myfile.close();
-
-    return 1;
-}
 
 int individualParallelTest(NQueen nqueen, map<us, ull> solutionMap) {
     ull subtotal;
@@ -66,7 +20,7 @@ int individualParallelTest(NQueen nqueen, map<us, ull> solutionMap) {
     double genTime, nqueenTime, totalnqueenTime;
 
     string filename;
-    filename = "tests2/P" + std::to_string(nqueen.getWorldSize()) + "N" + std::to_string(nqueen.getN()) + "depth" + std::to_string(nqueen.getDepth()) + ".txt";
+    filename = "testsN16/P" + to_string(nqueen.getWorldSize()) + "N" + to_string(nqueen.getN()) + "depth" + to_string(nqueen.getDepth()) + ".txt";
     myfile.open(filename);
     if (nqueen.getMyRank() == 0) {
         myfile << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
@@ -101,39 +55,29 @@ int individualParallelTest(NQueen nqueen, map<us, ull> solutionMap) {
     return total;
 }
 
-int serialTest(NQueen nqueen, map<us, ull> solutionMap) {
+int noFileParallelTest(NQueen nqueen, string filename, map<us, ull> solutionMap) {
+    ull subtotal;
+    ull total = 0;
+
+    vector<vector<us>> worldSizeBoard = nqueen.fileToVector(filename);
+
+    subtotal = nqueen.runParallel(worldSizeBoard);
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (nqueen.getMyRank() == 0) {
-        ull total = 0;
         ofstream myfile;
-        vector<us> board;
-
-
-        myfile.open("testSerialA.txt");
-        myfile << "Description of test: first serial test with no initial tree calculated" << "\n";
-        for (us N = 4; N < 15; N++) {
-            nqueen.setN(N);
-            board = nqueen.createBoard(N);
-            myfile << "N = " << N << "\n";
-            cout << "Value: " << N << std::endl;
-            for (int i = 0; i < 10; i++) {
-                std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-                total = nqueen.nqueens(0, board);
-                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-                if (total == solutionMap[N]) {
-                    myfile << "Time to execute (sec) = " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.0 << "\n";
-                    std::cout << "Time to execute (sec) = " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000000.0 << std::endl;
-                }
-                else {
-                    myfile << "Wrong solution calculated" << "\n";
-                    cout << "Wrong solution calculated. Intended value: " << solutionMap[N] << ". Actual: " << total << std::endl;
-
-                }
-            }
+        myfile.open("testResults.txt", ios::app);
+        if (total == solutionMap[nqueen.getN()]) {
+            myfile << 0 << " " << nqueen.getN() << " " << nqueen.getDepth() << " " << nqueen.getWorldSize() << " "; 
+        } else {
+            myfile << 1 << " " << nqueen.getN() << " " << nqueen.getDepth() << " " << nqueen.getWorldSize() << " "; 
         }
+        myfile.close();
     }
-    return 1;
+
+
+    return total;
 }
 
 int main(int argc, char** argv) {
@@ -147,12 +91,6 @@ int main(int argc, char** argv) {
     //Get rank of the processes
     int myRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
-
-    int depth, N;
-    N = stoi(argv[1]);
-    depth = stoi(argv[2]);
-
-    NQueen nqueen(N, depth, worldSize, myRank);
 
     std::map<us, ull> solutionMap = {
         {1, 1},
@@ -173,12 +111,22 @@ int main(int argc, char** argv) {
         {16, 14772512}
     };
 
-    //serialTest(nqueen, solutionMap);
+    if (argc == 4) {
+        int depth, N;
+        string filename;
+        N = stoi(argv[1]);
+        depth = stoi(argv[2]);
+        filename = argv[3];
 
-    //parallelTest(nqueen, solutionMap);
+        NQueen nqueen(N, depth, worldSize, myRank);
 
-    individualParallelTest(nqueen, solutionMap);
+        if (nqueen.getMyRank() == 0) {
+            cout << nqueen.getN() << " " << nqueen.getDepth() << " " << nqueen.getWorldSize() << endl;
+        }
 
+        noFileParallelTest(nqueen, filename, solutionMap);
+
+    }
 
     MPI_Finalize();
 
