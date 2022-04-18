@@ -1,2 +1,0 @@
-C:\Users\benho\Documents\Year 3\VS C++\testProj\x64\Debug\testProj.exe
-C:\Users\benho\Documents\Year 3\N-Queens\testProj\x64\Debug\testProj.exe
