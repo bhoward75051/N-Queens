@@ -1,3 +1,8 @@
+/* 
+* This is heavily based of Jeff Somers program 
+* http://users.rcn.com/liusomers/nqueen_demo/nqueens.html
+*/
+
 #include <string>
 #include <iostream>
 
@@ -29,15 +34,15 @@ void Nqueen(int boardSize) {
 
     for (i = 0; i < (1 + odd); i++) {
         bitfield = 0;
-        if (i == 0) {
-            int half = boardSize>>1;
+        if (i == 0) { //Not an odd board size
+            int half = boardSize>>1; //Half of board size
             bitfield = (1 << half) -1;
             pnStack = nStack + 1;
 
             nQueenBitRes[0] = 0;
             nQueenBitCol[0] = nQueenPosDiag[0] = nQueenNegDiag[0] = 0;
         }
-        else {
+        else { //Odd board size
             bitfield = 1 << (boardSize >> 1);
             numrows = 1;
 
@@ -52,17 +57,17 @@ void Nqueen(int boardSize) {
             bitfield = (bitfield - 1) >> 1;
         }
 
-        for (;;) {
+        for (;;) { //Loop until senital is hit
             lsb = -((signed)bitfield) & bitfield;
             if (bitfield == 0) {
-                bitfield = *--pnStack;
-                if (pnStack == nStack) {
+                bitfield = *--pnStack; //Get the previous bitfield from the stack
+                if (pnStack == nStack) { //Senital is hit, so we break the loop
                     break;
                 }
                 --numrows;
                 continue;
             }
-            bitfield &= ~lsb;
+            bitfield &= ~lsb; //Removes the lsb
 
             nQueenBitRes[numrows] = lsb;
             if (numrows < boardMinus) {
@@ -74,7 +79,7 @@ void Nqueen(int boardSize) {
                 bitfield = mask & ~(nQueenBitCol[numrows] | nQueenNegDiag[numrows] | nQueenPosDiag[numrows]);
                 continue;
             }
-            else {
+            else { //If numRows and boardMinus are equal, then a solution is found 
                 ++numberOfSol;
                 bitfield = *--pnStack;
                 --numrows;
