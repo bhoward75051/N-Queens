@@ -1,0 +1,16 @@
+% [H] means put the figure HERE, directly when you input this code.
+\begin{figure}[H]
+	\centering
+
+% We set the width of the figure based on the width of one line of text on the page. 
+% The value can be tuned to any value in [0.0, 1.0] to scale the image while maintaining its aspect ratio.
+	\includegraphics[width=0.5\linewidth]{./graphics/n4_backtracking.drawio.png}
+	
+% Caption is defined with a short and long version. The short version is shown in the 
+% List of Figures section, and the long version is used directly with the figure. 		
+	\caption[A N-Queens backtracking algorithm shown to get one solution for \(n = 2\)]{A N-Queens backtracking algorithm shown to get one solution for \(n = 2\)}
+	
+% For figures label should be defined after the caption to ensure proper figure numbering.
+	\label{fig:n4_backtracking}
+	
+\end{figure}
