@@ -21,4 +21,4 @@
 ./generateValues 15 1 "depthValues.txt"
 
 #run Intel MPI Benchmarks with mpirun - will automatically pick up Slurm parallel environment
-/usr/bin/time -f "%E %U %S" -a -o testResults.txt mpirun mpirun $MPI_HOME/intel64/bin/IMB-MPI1 15 1 "depthValues.txt"
+mpirun $MPI_HOME/intel64/bin/IMB-MPI1 15 1 "depthValues.txt"
