@@ -13,7 +13,7 @@
 #SBATCH --mem-per-cpu=2000
 ###
 
-module load compiler/intel mpi/intel
+module load compiler/intel mpi/intel mpi
 ./generateValues 15 1 "depthValues.txt"
 
 #run Intel MPI Benchmarks with mpirun - will automatically pick up Slurm parallel environment
