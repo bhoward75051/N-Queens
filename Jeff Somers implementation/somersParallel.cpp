@@ -8,10 +8,10 @@
  */
 
 
-
+#include <mpi.h>
 #include <stdio.h>
 #include <string>
-#include <iostream>
+#include <iostream> 
 #include <fstream>
 #include <bitset>
 #include <vector>
@@ -86,8 +86,45 @@ vector<vector<int>> fileToVector(string filename) {
 		return fullValues;
 	}
 
+int runParallel(vector<vector<us>> fullValues) {
+		int subtotal = 0;
+		for (vector<vector<us>>::size_type i = 0; i < fullValues.size(); i+= worldSize) {
+			if (i + myRank < fullValues.size()) {
+				subtotal += Nqueen(
+                fullValues[i + myRank][0],
+                fullValues[i + myRank][1],
+                fullValues[i + myRank][2],
+                fullValues[i + myRank][3]);
+			}
+		}
+		return subtotal;
+	}
+
+int noFileParallelTest(NQueen nqueen, string filename, map<us, ull> solutionMap) {
+    ull subtotal;
+    ull total = 0;
+
+    vector<vector<us>> worldSizeBoard = nqueen.fileToVector(filename);
+
+    subtotal = nqueen.runParallel(worldSizeBoard);
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    return total;
+}
+
 
 int main(int argc, char** argv) {
+
+    MPI_Init(&argc, &argv);
+
+    // Get the number of processes
+    int worldSize;
+    MPI_Comm_size(MPI_COMM_WORLD, &worldSize);
+
+    //Get rank of the processes
+    int myRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);-
     if (argc != 2) {
         cout << "Not enough args" << endl;
         return 0;
