@@ -86,29 +86,16 @@ vector<vector<int>> fileToVector(string filename) {
 		return fullValues;
 	}
 
-int runParallel(vector<vector<us>> fullValues) {
-		int subtotal = 0;
-		for (vector<vector<us>>::size_type i = 0; i < fullValues.size(); i+= worldSize) {
-			if (i + myRank < fullValues.size()) {
-				subtotal += Nqueen(
-                fullValues[i + myRank][0],
-                fullValues[i + myRank][1],
-                fullValues[i + myRank][2],
-                fullValues[i + myRank][3]);
-			}
+int parallelTest(vector<vector<int>> fullValues, int worldSize, int myRank) {
+    int subtotal;
+    int total = 0;;
+	for (vector<vector<int>>::size_type i = 0; i < fullValues.size(); i+= worldSize) {
+		if (i + myRank < fullValues.size()) {
+			Nqueen(fullValues[i + myRank][0], fullValues[i + myRank][1], fullValues[i + myRank][2], fullValues[i + myRank][3]);
 		}
-		return subtotal;
 	}
-
-int noFileParallelTest(NQueen nqueen, string filename, map<us, ull> solutionMap) {
-    ull subtotal;
-    ull total = 0;
-
-    vector<vector<us>> worldSizeBoard = nqueen.fileToVector(filename);
-
-    subtotal = nqueen.runParallel(worldSizeBoard);
-    MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
     return total;
 }
@@ -124,7 +111,7 @@ int main(int argc, char** argv) {
 
     //Get rank of the processes
     int myRank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);-
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
     if (argc != 2) {
         cout << "Not enough args" << endl;
         return 0;
@@ -136,9 +123,7 @@ int main(int argc, char** argv) {
 
     generateArrays("bitmapNQtest.txt", 3);
     vector<vector<int>> fullValues = fileToVector("bitmapNQtest.txt");
-    for (vector<int> i : fullValues ) {
-        Nqueen(i[0], i[1], i[2], i[3]);
-    }
+    parallelTest(fullValues, worldSize, myRank);
     cout << total << endl;
 
     return 0;
