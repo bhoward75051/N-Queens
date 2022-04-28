@@ -12,12 +12,13 @@
 #SBATCH --mem-per-cpu=2000
 
 #Number of parallel processes (Tasks)
-#SBATCH --ntasks=15
+#SBATCH --ntasks=8
 
 #Tasks to run per node
-#SBATCH --tasks-per-node=4
+#SBATCH --tasks-per-node=1
 
 ###
+module load mpi/mpich/3.2.1
 ./generateValues 15 1 "depthValues.txt"
 
 #run Intel MPI Benchmarks with mpirun - will automatically pick up Slurm parallel environment
