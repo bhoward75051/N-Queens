@@ -13,6 +13,6 @@
 #SBATCH --mem-per-cpu=2000
 ###
 
-module load compiler/intel/15.0/1.133
+module load compiler/intel
 
 mpirun ./autoTest 15 1 "depthValues.txt"
