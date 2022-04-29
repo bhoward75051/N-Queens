@@ -15,7 +15,7 @@
 
 module purge
 module load compiler/intel/2018/2
-module load mpi/mpich/3.2.1
+module load mpich/ge/gcc/64/3.3.2
 
 
 mpirun ./autoTest 15 1 "depthValues.txt"
