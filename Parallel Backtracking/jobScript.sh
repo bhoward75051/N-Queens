@@ -16,4 +16,5 @@
 module purge
 module load mpi/mpich/3.2.1
 
-time mpiexec ./autoTest 15 1 "depthValues.txt"
+/generateValues 15 2 "depthValues.txt"
+time mpiexec ./autoTest 15 2 "depthValues.txt"
