@@ -16,5 +16,4 @@
 module purge
 module load mpi/mpich/3.2.1
 
-
-mpiexec ./autoTest 15 1 "depthValues.txt"
+usr/bin/time -f "%E %U %S" -a -o testResults.txt mpiexec ./autoTest 15 1 "depthValues.txt"
