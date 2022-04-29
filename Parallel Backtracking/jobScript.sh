@@ -13,7 +13,9 @@
 #SBATCH --mem-per-cpu=2000
 ###
 
-module load mpi/intel
-module load compiler/intel
+module purge
+module load compiler/intel/2018/2
+module load mpi/intel/2018/2
+
 
 mpirun ./autoTest 15 1 "depthValues.txt"
