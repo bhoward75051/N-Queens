@@ -8,7 +8,7 @@
 
 #SBATCH --job-name=nq_bench
 
-#SBATCH --time=0-00:10
+#SBATCH --time=0-01:00
 
 #SBATCH --mem-per-cpu=2000
 ###
