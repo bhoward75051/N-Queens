@@ -67,7 +67,7 @@ int noFileParallelTest(NQueen nqueen, string filename, map<us, ull> solutionMap)
 
     if (nqueen.getMyRank() == 0) {
         ofstream myfile;
-        myfile.open("testResults.txt", ios::app);
+        myfile.open("testResultsHPC.txt", ios::app);
         if (total == solutionMap[nqueen.getN()]) {
             myfile << 0 << " " << nqueen.getN() << " " << nqueen.getDepth() << " " << nqueen.getWorldSize() << " "; 
         } else {
