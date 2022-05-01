@@ -122,7 +122,7 @@ int main(int argc, char** argv) {
 
     if (myRank == 0) {
         ofstream myfile;
-        myfile.open("testResultsBit.txt", ios::app);
+        myfile.open("testResultsBitHPC.txt", ios::app);
         if (completeTotal == solutionMap[boardSize]) {
             myfile << 0 << " " << boardSize << " " << depth << " " << worldSize << " "; 
         } else {
