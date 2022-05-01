@@ -4,7 +4,7 @@
 #SBATCH -p compute
 #SBATCH -o runout.%J
 #SBATCH -e runerr.%J
-#SBATCH -n 4
+#SBATCH -n 1
 
 #SBATCH --job-name=nq_bench
 
