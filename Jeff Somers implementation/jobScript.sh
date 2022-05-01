@@ -16,7 +16,7 @@
 module purge
 module load mpi/mpich/3.2.1
 
-for N in {10..16}
+for N in {10..18}
 do
     ./generateArray $N 6 
     /usr/bin/time -f "%E %U %S" -a -o testResultsBitHPC.txt time mpiexec ./bitwiseParallel $N 6
