@@ -18,25 +18,26 @@
 
 using namespace std;
 
-int boardSize, mask, total;
+int boardSize;
 
-void Nqueen(int y, int left, int down, int right) {
-    int bitmap, bit;
-
+int Nqueen(int y, int left, int down, int right, int mask) {
+    int bitmap, bit, subtotal;
+    subtotal = 0;
     if (y == boardSize) {
-        total++;
+        subtotal++;
     } else {
         bitmap = mask & ~(left | down | right);
         while (bitmap) { //While any int is not 0. 
             bit = -bitmap & bitmap;
             bitmap ^= bit;
-            Nqueen(y+1, (left | bit) << 1, down | bit, (right | bit) >> 1);
+            subtotal += Nqueen(y+1, (left | bit) << 1, down | bit, (right | bit) >> 1, mask);
         }
     }
+    return subtotal;
 
 }
 
-void NqueensLimitedDepth(int y, int left, int down, int right, int depth, ofstream& myfile) {
+void NqueensLimitedDepth(int y, int left, int down, int right, int depth, ofstream& myfile, int mask) {
     int bitmap, bit;
 
     if (y == depth) {
@@ -46,18 +47,20 @@ void NqueensLimitedDepth(int y, int left, int down, int right, int depth, ofstre
         while (bitmap) { //While any int is not 0.
             bit = -bitmap & bitmap;
             bitmap ^= bit;
-            NqueensLimitedDepth(y+1, (left | bit) << 1, down | bit, (right | bit) >> 1, depth, myfile);
+            NqueensLimitedDepth(y+1, (left | bit) << 1, down | bit, (right | bit) >> 1, depth, myfile, mask);
         }
     }
 
 }
 
 void generateArrays(string filename, int depth) {
-		ofstream myfile;
-		myfile.open(filename);
-		NqueensLimitedDepth(0, 0, 0, 0, depth, myfile);
-		myfile.close();
-	}
+    int mask;
+    mask = (1 << boardSize) - 1;
+	ofstream myfile;
+	myfile.open(filename);
+	NqueensLimitedDepth(0, 0, 0, 0, depth, myfile, mask);
+	myfile.close();
+}
 
 vector<vector<int>> fileToVector(string filename) {
 		vector<vector<int>> fullValues;
@@ -87,17 +90,17 @@ vector<vector<int>> fileToVector(string filename) {
 	}
 
 int parallelTest(vector<vector<int>> fullValues, int worldSize, int myRank) {
-    int subtotal;
-    int total = 0;;
+    int mask, subtotal;
+
+    subtotal = 0;
+    mask = (1 << boardSize) - 1;
+    MPI_Barrier(MPI_COMM_WORLD);
 	for (vector<vector<int>>::size_type i = 0; i < fullValues.size(); i+= worldSize) {
 		if (i + myRank < fullValues.size()) {
-			Nqueen(fullValues[i + myRank][0], fullValues[i + myRank][1], fullValues[i + myRank][2], fullValues[i + myRank][3]);
+			subtotal += Nqueen(fullValues[i + myRank][0], fullValues[i + myRank][1], fullValues[i + myRank][2], fullValues[i + myRank][3], mask);
 		}
 	}
-    //MPI_Barrier(MPI_COMM_WORLD);
-    //MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    return total;
+    return subtotal;
 }
 
 
@@ -117,14 +120,25 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    int total;
+    int subtotal;
+
     boardSize = atoi(argv[1]);
-    total = 0;
-    mask = (1 << boardSize) - 1;
 
     generateArrays("bitmapNQtest.txt", 3);
     vector<vector<int>> fullValues = fileToVector("bitmapNQtest.txt");
-    parallelTest(fullValues, worldSize, myRank);
-    cout << total << endl;
+    MPI_Barrier(MPI_COMM_WORLD);
+    subtotal = parallelTest(fullValues, worldSize, myRank);
 
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Reduce(&subtotal, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    //cout << subtotal << endl;
+    if (myRank == 0) {
+        cout << total << endl;
+    }
+
+    MPI_Finalize();
+    
     return 0;
 }
