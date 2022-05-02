@@ -18,6 +18,6 @@ module load mpi/mpich/3.2.1
 
 for N in {19..20}
 do
-    ./generateArray $N 10
-    /usr/bin/time -f "%E %U %S" -a -o testResultsBitHPC.txt time mpiexec ./bitwiseParallel $N 10
+    ./generateArray $N 6
+    /usr/bin/time -f "%E %U %S" -a -o testResultsBitHPC.txt time mpiexec ./bitwiseParallel $N 6
 done
