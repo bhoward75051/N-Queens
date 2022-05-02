@@ -39,3 +39,36 @@ legend(4, 95, legend=c("Depth 0", "Depth 1"),
 data <- read.table(file="newtestResultsHPC.txt", sep=" ", header=FALSE)
 colnames(data) <- c("n","depth","processes","real","user")
 
+data1 <- data[ which(data$processes == 1 ), ]
+data2 <- data[ which(data$processes == 2 ), ]
+data4 <- data[ which(data$processes == 4 ), ]
+data8 <- data[ which(data$processes == 8 ), ]
+data16 <- data[ which(data$processes == 16 ), ]
+data24 <- data[ which(data$processes == 24), ]
+data32 <- data[ which(data$processes == 32 ), ]
+data40 <- data[ which(data$processes == 40 ), ]
+data48 <- data[ which(data$processes == 48 ), ]
+data56 <- data[ which(data$processes == 56 ), ]
+data64 <- data[ which(data$processes == 64 ), ]
+
+plot(data1[, 1], data1[, 4], col='red', type = "l", main="Time to compute N queens problem on a HPC", xlab="N", ylab="Time (seconds)")
+lines(data2[, 1], data2[, 4], col='blue')
+lines(data4[, 1], data4[, 4], col='green')
+legend(10, 1000, legend=c("1 cores", "2 cores", "4 cores"),
+       col=c("red", "blue", "green"), lty=1:1, cex=1)
+
+plot(data1[, 1], data1[, 4], col='red', type = "l", main="Time to compute N Queens problem", xlab="N", ylab="Time (seconds)")
+lines(data2[, 1], data2[, 4], col='blue')
+lines(data4[, 1], data4[, 4], col='green')
+legend(4, 95, legend=c("Depth 0", "Depth 1"),
+       col=c("red", "blue"), lty=1:1, cex=1)
+
+data16 <- data[ which(data$n == 16 ), ]
+data16 <- data16[order(data16$processes),] 
+
+data15 <- data[ which(data$n == 15 ), ]
+data15 <- data15[order(data15$processes),] 
+
+plot(data16[, 3], data16[, 4], col='red', type = "l", main="Time to compute 16-Queens problem", xlab="Number of Processors", ylab="Time (seconds)")
+
+
