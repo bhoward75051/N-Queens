@@ -14,7 +14,7 @@
 ###
 
 module purge
-module load mpi/mpich/3.2.1
+#module load mpi/mpich/3.2.1
 
 for N in {10..18}
 do
