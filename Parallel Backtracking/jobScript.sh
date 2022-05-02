@@ -4,7 +4,7 @@
 #SBATCH -p compute
 #SBATCH -o runout.%J
 #SBATCH -e runerr.%J
-#SBATCH -n 56
+#SBATCH -n 32
 
 #SBATCH --job-name=nq_bench
 
@@ -16,7 +16,7 @@
 module purge
 module load mpi/mpich/3.2.1
 
-for N in {10..16}
+for N in {16..20}
 do
     ./generateValues $N 6 "depthValues.txt"
     /usr/bin/time -f "%E %U %S" -a -o testResultsHPC.txt time mpiexec ./autoTest $N 6 "depthValues.txt"

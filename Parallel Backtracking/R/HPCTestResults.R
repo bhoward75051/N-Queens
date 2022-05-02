@@ -72,3 +72,11 @@ data15 <- data15[order(data15$processes),]
 plot(data16[, 3], data16[, 4], col='red', type = "l", main="Time to compute 16-Queens problem", xlab="Number of Processors", ylab="Time (seconds)")
 
 
+data <- read.table(file="newtestResultsBitHPC.txt", sep=" ", header=FALSE)
+colnames(data) <- c("n","depth","processes","real","user")
+
+data16 <- data[ which(data$n == 18 ), ]
+data16 <- data16[order(data16$processes),] 
+
+plot(data16[, 3], data16[, 4], col='red', type = "l", main="Time to compute 16-Queens problem", xlab="Number of Processors", ylab="Time (seconds)")
+
