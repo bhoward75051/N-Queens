@@ -1,13 +1,3 @@
-/* TO DO
- * Create a header class with a class for this 
- * Vars will be y, left, down, right, bitmap, mask
- * 
- * Implement MPI 
- * 
- * Explain code
- */
-
-
 #include <mpi.h>
 #include <stdio.h>
 #include <string>
