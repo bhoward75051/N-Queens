@@ -30,19 +30,12 @@ data10 <- data1[ which(data1$depth == 0 ), ]
 data11 <- data1[ which(data1$depth == 1 ), ]
 data12 <- data1[ which(data1$depth == 2 ), ]
 
-data10
-data11
-
 plot(data10[, 1], data10[, 4], col='red', type = "l", main="Time to compute 14 Queens problem", xlab="N", ylab="Time (seconds)")
 lines(data11[, 1], data11[, 4], col='blue')
 lines(data12[, 1], data12[, 4], col='green')
 legend(4, 95, legend=c("Depth 0", "Depth 1"),
        col=c("red", "blue"), lty=1:1, cex=1)
 
-data12
-plot(data12_1[, 2], data12_1[, 4])
-plot(data12_2[,2], data12_2[,6])
-lines(data[,3], col = 'red')
-lines(data[,4], col = 'green')
-lines(data[,6], col = 'blue')
+data <- read.table(file="newtestResultsHPC.txt", sep=" ", header=FALSE)
+colnames(data) <- c("n","depth","processes","real","user")
 

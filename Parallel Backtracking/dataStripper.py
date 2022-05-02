@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-filename = 'testResults.txt'
+filename = 'testResultsHPC.txt'
 
 
 #with open(filename) as file:
@@ -38,7 +38,7 @@ with open(filename, 'r') as openfile:
        
 print(newTestResults)
 openfile.close()
-with open('newtestResults.txt', 'w') as f:
+with open('newtestResultsHPC.txt', 'w') as f:
     for line in newTestResults:
         f.write(str(line[0]))
         f.write(" ")
