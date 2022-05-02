@@ -19,3 +19,7 @@ Example:
 ```
 mpirun -n 4 ./autoTest 12 4 testResults.txt
 ```
+# Files
+The Array Backtracking algorithm can be found at `N-Queens/Parallel Backtracking/autoTest.cpp` and uses the header file `NQueen.hpp`
+
+The Bit Pattern Backtracking algorithm can be found at `N-Queens/Jeff Somers Implementation`
