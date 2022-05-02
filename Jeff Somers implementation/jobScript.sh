@@ -16,8 +16,8 @@
 module purge
 module load mpi/intel/2020/0
 
-for N in {10..21}
+for N in {10..19}
 do
-    ./generateArray $N 6 
-    /usr/bin/time -f "%E %U %S" -a -o testResultsBitHPC.txt time mpiexec ./bitwiseParallel $N 6
+    ./generateArray $N $N-4 
+    /usr/bin/time -f "%E %U %S" -a -o testResultsBitHPC.txt time mpiexec ./bitwiseParallel $N $N-4
 done
