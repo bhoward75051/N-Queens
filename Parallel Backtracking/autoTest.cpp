@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
     int myRank;
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
-    std::map<us, ull> solutionMap = {
+    std::map<int, int> solutionMap = {
         {1, 1},
         {2, 0},
         {3, 0},
@@ -108,7 +108,12 @@ int main(int argc, char** argv) {
         {13, 73712},
         {14, 365596},
         {15, 2279184},
-        {16, 14772512}
+        {16, 14772512},
+        {17, 95815104},
+        {18, 666090624},
+        {19, 4968057848},
+        {20, 39029188884},
+        {21, 314666222712}
     };
 
     if (argc == 4) {
