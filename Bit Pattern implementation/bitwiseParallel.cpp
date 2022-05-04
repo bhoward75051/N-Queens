@@ -1,4 +1,4 @@
-#include <mpi.h>
+#include <mpi.h> //Must compile with MPI not g++ 
 #include <stdio.h>
 #include <string>
 #include <iostream> 
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
     }
 
     boardSize = atoi(argv[1]);
-    depth = atoi(argv[2]);
+    depth = atoi(argv[2]);  
     total = 0;
     mask = (1 << boardSize) - 1;
 
